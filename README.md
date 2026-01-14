@@ -1,2 +1,2 @@
-# risk_stratifier
+# Risk stratification
 Wraps a standardized approach to risk stratification used by the intelligence function
