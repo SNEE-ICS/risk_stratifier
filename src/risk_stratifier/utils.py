@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Union
+from typing import Union, Tuple
 
 PandasLike = Union[pd.Series, pd.DataFrame]
 

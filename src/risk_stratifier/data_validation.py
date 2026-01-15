@@ -1,5 +1,5 @@
 import pandas as pd
-import _utils
+import risk_stratifier.utils as utils
 from pandas.api.types import is_integer_dtype, is_float_dtype, is_string_dtype
 from typing import Any, Union
 from colorama import Fore, Style, init
@@ -108,7 +108,7 @@ def _y_and_X_length_match(y:pd.Series, X: pd.DataFrame):
     """
     confirms that the y and X provided are the same length
     """
-    matches, y_len, X_len = _utils._dimensions_of_pandas_like_match(y, X)
+    matches, y_len, X_len = utils._dimensions_of_pandas_like_match(y, X)
     if not matches:
         raise ValueError(f"Objects must have the same length, y is of length {y_len} and X is of length {X_len}.")
     
