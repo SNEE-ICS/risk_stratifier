@@ -7,6 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "colorama>=0.4.6",
     "dataclasses>=0.8",
+    "datetime>=6.0",
+    "matplotlib>=3.10.8",
     "numpy>=2.4.1",
     "pandas>=2.3.3",
     "scikit-learn>=1.8.0",

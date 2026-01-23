@@ -1,10 +1,16 @@
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import RepeatedStratifiedKFold, RandomizedSearchCV
-from sklearn.metrics import brier_score_loss, roc_auc_score, log_loss, make_scorer
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 
+from risk_stratifier.data_validation import validate_binary_y_and_X
+
+import numpy as np
+import pandas as pd
+
+from sklearn.model_selection import RepeatedStratifiedKFold, RandomizedSearchCV
+from sklearn.metrics import brier_score_loss, roc_auc_score, log_loss, make_scorer
+from sklearn.calibration import calibration_curve
+
+import matplotlib.pyplot as plt
 
 @dataclass
 class FoldResult:
@@ -288,8 +294,58 @@ def _summarize_scores(scores_df: pd.DataFrame) -> Dict[str, float]:
     
     return summary
 
+def _calibration_curve(
+    predictions_df: pd.DataFrame,
+    n_bins: int = 10,
+    strategy: str = "quantile"
+) -> plt.Figure:
+    """
+    Create a calibration curve (reliability diagram) from CV predictions.
 
-def nested_cv_with_probabilities(
+    Parameters
+    ----------
+    predictions_df : pd.DataFrame
+        DataFrame with at least 'y_true' and 'y_proba' columns, typically
+        produced by _aggregate_fold_results.
+    n_bins : int, default=10
+        Number of bins to use in the calibration curve.
+    strategy : {'uniform', 'quantile'}, default='quantile'
+        Binning strategy passed to sklearn.calibration.calibration_curve.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        Figure containing the calibration plot.
+    """
+    y_true = predictions_df["y_true"].values
+    y_proba = predictions_df["y_proba"].values
+
+    # Compute calibration curve
+    prob_true, prob_pred = calibration_curve(
+        y_true,
+        y_proba,
+        n_bins=n_bins,
+        strategy=strategy
+    )  # [web:21][web:28]
+
+    # Create plot
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.plot([0, 1], [0, 1], linestyle="--", color="gray", label="Perfect calibration")
+    ax.plot(prob_pred, prob_true, marker="o", label="Model")
+
+    ax.set_xlabel("Mean predicted probability")
+    ax.set_ylabel("Observed fraction of positives")
+    ax.set_title("Calibration curve (reliability diagram)")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.legend(loc="best")
+
+    fig.tight_layout()
+    return fig
+
+
+
+def run_nested_cv_calibration_assessment(
     pipeline,
     param_distributions: Dict,
     X,
@@ -350,6 +406,9 @@ def nested_cv_with_probabilities(
         - 'best_params_per_fold': List of best parameters per fold
         - 'summary': Dict with mean and std of each metric
     """
+
+    # Confirm data is permissable (note that data with fewer than 100 rows will raise an error)
+    validate_binary_y_and_X(y, X)
     
     # Create CV splitters
     outer_cv = RepeatedStratifiedKFold(
@@ -409,10 +468,14 @@ def nested_cv_with_probabilities(
     
     # Extract best params in order
     best_params_list = [result.best_params for result in fold_results]
+
+    # Generate calibration plot
+    calibration_fig = _calibration_curve(predictions_df)
     
     return {
         'outer_scores': scores_df,
         'predictions': predictions_df,
         'best_params_per_fold': best_params_list,
-        'summary': summary
+        'summary': summary,
+        "calibration_plot": calibration_fig
     }
