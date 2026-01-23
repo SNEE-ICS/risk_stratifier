@@ -8,7 +8,7 @@ Risk stratifier is a python package which wraps some of the standard approaches 
 To use this package you can install from this repo from your terminal:
 
 ```
-pip install pip@git+https://github.com/SNEE-ICS/risk_stratifier
+pip install git+https://github.com/SNEE-ICS/risk_stratifier.git
 ```
 
 ## The guiding principles of this package
