@@ -15,13 +15,13 @@ pip install "git+https://github.com/SNEE-ICS/risk_stratifier.git"
 
 ### Probabilities are more important than class prediction
 
-In the context of an ICB, it is rare that a predictive model will be used to directly predict whether an event happens or not. This is because direct classification is somewhat difficult to interpret from a clinical perspective. Furthermore, it is often difficult, both for the analyst and the organisation, as to the cost of different types of error.
+In the context of an ICB, it is rare that a predictive model will be used to directly predict whether an event happens or not. This is because direct classification is somewhat difficult to interpret from a clinical perspective.
 
-for example, is incorrectly predicting an individual will get cancer less costly than incorrectly predicting an individual won't get cancer. Intuitively, maybe yes - but by how much?
+Furthermore, it is often difficult, both for the analyst and the organisation, to assess the cost of different types of error. For example, is incorrectly predicting an individual will get cancer less costly than incorrectly predicting an individual won't get cancer. Intuitively, maybe yes - but by how much?
 
-In some cases. class prediction could concievably be considered as automating clinical decision making. This would be innapropriate in almost all settings where the Intelligence Function is conducting predictive modelling.
+In some cases class prediction could concievably be considered as automating clinical decision making. This would be innapropriate in almost all settings where the Intelligence Function is conducting predictive modelling.
 
-Instead, this package focuses on generating probability predictions.
+For these reasons, this package instead focuses on generating probability predictions.
 
 ### Predicted probabilities must be well calibrated
 
@@ -59,6 +59,8 @@ Conformal prediction provides guaranteed uncertainty intervals. However, like re
 
 ## How to use this package?
 
-Documentation for package use will be added soon.
+[Can your data be used with this package?](docs/validate_data.ipynb) documentation for the ```validate_binary_y_and_X()``` function.
+
+more documentation to be added...
 
 

@@ -360,14 +360,9 @@ def run_nested_cv_calibration_assessment(
     verbose: bool = True
 ) -> Dict:
     """
-    Perform nested cross-validation optimizing Brier score.
+    This function takes provided data and a model pipeline (from sklearn) for binary classification and then runs nested cross-validation (optimizing the brier score). It then outputs results that permit robust assessment of the pipeline's risk stratification performance with a focus on well calibrated probabilities.
     
-    This function orchestrates nested CV by:
-    1. Creating CV splitters for outer and inner loops
-    2. Iterating over outer folds
-    3. For each outer fold, optimizing hyperparameters on training data
-    4. Evaluating on held-out test data with multiple metrics
-    5. Aggregating results and computing summary statistics
+    Returns results that allow you to robustly assess the performance and calibration of the model you provide have provided.
     
     Parameters
     ----------
@@ -376,12 +371,12 @@ def run_nested_cv_calibration_assessment(
     param_distributions : dict
         Dictionary with parameter names as keys and distributions
         or lists of parameters to try.
-    X : pd.DataFrame or np.ndarray
+    X : pd.DataFrame
         Feature matrix.
-    y : pd.Series or np.ndarray
+    y : pd.Series
         Binary target variable (0s and 1s).
     outer_folds : int, default=5
-        Number of folds for outer cross-validation loop.
+        Number of folds for outer cross-validation loop. 
     outer_repeats : int, default=1
         Number of repeats for outer cross-validation loop.
     inner_folds : int, default=3
@@ -405,6 +400,7 @@ def run_nested_cv_calibration_assessment(
         - 'predictions': DataFrame with true labels and predicted probabilities
         - 'best_params_per_fold': List of best parameters per fold
         - 'summary': Dict with mean and std of each metric
+        - 'calibration_plot': A reliability plot
     """
 
     # Confirm data is permissable (note that data with fewer than 100 rows will raise an error)
