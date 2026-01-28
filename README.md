@@ -11,6 +11,16 @@ To use this package you can install from this repo from your terminal:
 pip install "git+https://github.com/SNEE-ICS/risk_stratifier.git"
 ```
 
+## How to use this package?
+
+Before you check out the documentation, it is recommended that you review **The guiding principles of this package** in the section below.
+
+[Can your data be used with this package?](docs/validate_data.ipynb) documentation for the ```validate_binary_y_and_X()``` function.
+
+[Handling missingness in numeric variables transparently](docs/handle_missingness.ipynb) documentation for the ```add_numeric_missingness_indicators()```
+
+more documentation to be added...
+
 ## The guiding principles of this package
 
 ### Probabilities are more important than class prediction

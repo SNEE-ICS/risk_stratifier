@@ -1,6 +1,6 @@
 import pandas as pd
 
-def add_missingness_indicators(X: pd.DataFrame) -> pd.DataFrame:
+def add_numeric_missingness_indicators(X: pd.DataFrame) -> pd.DataFrame:
     """
     For each numeric column with missing values, adds a '<col>_missingness'
     column containing 'missing' or 'present' as string dtype.
