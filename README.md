@@ -19,7 +19,7 @@ Before you check out the documentation, it is recommended that you review **The 
 
 [Handling missingness in numeric variables transparently](docs/handle_missingness.ipynb) documentation for the ```add_numeric_missingness_indicators()```
 
-more documentation to be added...
+Documentation on premade modelling pipelines and cross validation to be added soon...
 
 ## The guiding principles of this package
 
@@ -67,10 +67,17 @@ Recalibration would permit a wider range of performant models that also produce 
 
 Conformal prediction provides guaranteed uncertainty intervals. However, like recalibration this requires additional data partitioning and computation.
 
-## How to use this package?
+## What is in development?
 
-[Can your data be used with this package?](docs/validate_data.ipynb) documentation for the ```validate_binary_y_and_X()``` function.
+Binary nested cross-validation function is complete and tested - documentation needs to be written.
 
-more documentation to be added...
+preprepared modelling pipelines are written but remain untested. These include:
+- lasso regression
+- ridge regression
+- xgboost
 
+There is a desire to also write a cat_boost pipeline. Given the large volumes of categorical data in healthcare, it is a strong candidate for further development.
 
+Integration with the premade modelling pipeline and binary nested cross-validation will require testing.
+
+A function to fit the final model on the full dataset which is then stored and logged must be written.

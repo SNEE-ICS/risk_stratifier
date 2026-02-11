@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.linear_model import LogisticRegression
+import xgboost as xgb
 
 
 #============================================
@@ -40,10 +41,6 @@ def get_logistic_ridge_pipeline_and_hyperparameters(
         Column names of categorical features.
     numeric_features : list of str
         Column names of numeric features.
-    cat_variance_threshold : float, default=0.0
-        Variance threshold for filtering one-hot encoded categorical features.
-    num_variance_threshold : float, default=0.0
-        Variance threshold for filtering numeric features.
     solver: string, default=saga
         Optimal solver when samples are > 100,000 and samples >> features. for smaller datasets switch to 'lbfgs'.
     max_iter: int, default=5000
@@ -60,7 +57,7 @@ def get_logistic_ridge_pipeline_and_hyperparameters(
     # Categorical preprocessing: OHE with nulls as separate category + variance filter
     cat_transformer = Pipeline(steps=[
         ('onehot', OneHotEncoder(
-            drop='first',  # Note: 'most_frequent' not available in sklearn
+            drop='first',
             handle_unknown='ignore',
             sparse_output=False
         )),
@@ -132,10 +129,6 @@ def get_logistic_lasso_pipeline_and_hyperparameters(
         Column names of categorical features.
     numeric_features : list of str
         Column names of numeric features.
-    cat_variance_threshold : float, default=0.0
-        Variance threshold for filtering one-hot encoded categorical features.
-    num_variance_threshold : float, default=0.0
-        Variance threshold for filtering numeric features.
     solver: string, default=saga
         Optimal solver when samples are > 100,000 and samples >> features. for smaller datasets switch to 'lbfgs'.
     max_iter: int, default=5000
@@ -152,7 +145,7 @@ def get_logistic_lasso_pipeline_and_hyperparameters(
     # Categorical preprocessing: OHE with nulls as separate category + variance filter
     cat_transformer = Pipeline(steps=[
         ('onehot', OneHotEncoder(
-            drop='first',  # Note: 'most_frequent' not available in sklearn
+            drop='first',
             handle_unknown='ignore',
             sparse_output=False
         )),
@@ -193,14 +186,14 @@ def get_logistic_lasso_pipeline_and_hyperparameters(
 
 
 #============================================
-#           catboost
+#               XGBoost
 #============================================
 
-def get_catboost_pipeline_and_hyperparameters(
+def get_xgboost_pipeline_and_hyperparameters(
     categorical_features,
     numeric_features,
-    solver = 'saga',
-    max_iter = 5000
+    n_estimators = 800,
+    positive_class_weighting = 1
 ):
     """
     Provides an sklearn catboost pipeline and an appropriate hyperparameter grid for the pipeline.
@@ -208,12 +201,12 @@ def get_catboost_pipeline_and_hyperparameters(
     The pipeline carries out the following transformations:
 
     - For numeric features (as indicated by the list provided by the user):
+        - NAs are imputed to the median (it would be prudent to preprocess by creating flags of missings)
+        - They are then standardized
         - Zero variance features are eliminated.
 
     - For categorical variables (as indicated by the list provided by the user):
-        - NAs are treated as their own category
-        - categories are one hot encoded dropping the first category to avoid perfect linear dependence.
-        - binary features are standardized.
+        - NAs are treated as their own category.
         - Zero variance features are eliminated.
 
 
@@ -224,14 +217,10 @@ def get_catboost_pipeline_and_hyperparameters(
         Column names of categorical features.
     numeric_features : list of str
         Column names of numeric features.
-    cat_variance_threshold : float, default=0.0
-        Variance threshold for filtering one-hot encoded categorical features.
-    num_variance_threshold : float, default=0.0
-        Variance threshold for filtering numeric features.
-    solver: string, default=saga
-        Optimal solver when samples are > 100,000 and samples >> features. for smaller datasets switch to 'lbfgs'.
-    max_iter: int, default=5000
-        Controls the number of times gradient descent is repeated to be below some level of tolerance. 5000 (slightly high) reflects the potentially large size of the dataset and the imbalance that is common in healthcare settings.
+    n_estimators: int, default=800
+        Determines the number of boosting rounds. A larger value permits greater convergence to the optimal at the expense of compute time. 500 is somewhat high but permits more effective hyperparameterization. If computation is slow, consider lowering.
+    positive_class_weighting: int, default=1
+        Determines how errors in the positive class are weighted. E.g if set to 100, errors predicting the positive class are 100x more impactful as compared to errors on the negative class. For small imbalanced datasets consider manipulating this. defaul of 1 means equal weighting.
     
     Returns
     -------
@@ -244,18 +233,16 @@ def get_catboost_pipeline_and_hyperparameters(
     # Categorical preprocessing: OHE with nulls as separate category + variance filter
     cat_transformer = Pipeline(steps=[
         ('onehot', OneHotEncoder(
-            drop='first',  # Note: 'most_frequent' not available in sklearn
+            drop='first',
             handle_unknown='ignore',
             sparse_output=False
         )),
-        ('scaler', StandardScaler()),
         ('var_filter', VarianceThreshold(threshold=0))
     ])
     
     # Numeric preprocessing: median imputation + standardization + variance filter
     num_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler()),
         ('var_filter', VarianceThreshold(threshold=0))
     ])
     
@@ -266,17 +253,30 @@ def get_catboost_pipeline_and_hyperparameters(
             ('num', num_transformer, numeric_features)
         ]
     )
+
+    # define xgboost classifier algorithm
+    xgb_estimator = xgb.XGBClassifier(
+        objective='binary:logistic',
+        eval_metric='logloss',
+        tree_method='hist',
+        scale_pos_weight = positive_class_weighting,
+        random_state = 42,
+        n_jobs = -1
+
+    )
     
     # Full pipeline with logistic ridge regression
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
-        ('classifier', LogisticRegression(max_iter=max_iter, solver=solver, l1_ratio=1.0))
+        ('classifier', xgb_estimator)
     ])
 
     #define parameter grid
     param_grid = {
-        # Regularization strength (inverse of regularization, log-scale)
-        'classifier__C': [0.001, 0.01, 0.1, 1.0, 10.0, 100.0],
+        'classifier__max_depth': [3, 5, 6, 8],
+        'classifier__max_depth': [0.01, 0.05, 0.1, 0.2],
+        'classifier__min_child_weight': [1, 5, 10, 15, 20],
+        'classifier__max_delta_step': [0, 1, 2, 4]
     }
 
     
