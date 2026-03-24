@@ -19,7 +19,9 @@ Before you check out the documentation, it is recommended that you review **The 
 
 [Handling missingness in numeric variables transparently](docs/handle_missingness.ipynb) documentation for the ```add_numeric_missingness_indicators()```
 
-Documentation on premade modelling pipelines and cross validation to be added soon...
+[Making use of pre-made modelling pipelines](docs/preprepared_models.ipynb) documentation for the ```add_numeric_missingness_indicators()```
+
+Documentation on cross validation to be added soon...
 
 ## The guiding principles of this package
 
