@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from unittest.mock import patch
 
-from risk_stratifier.handling_missings import add_missingness_indicators
+from risk_stratifier.handling_missings import add_numeric_missingness_indicators
 # ^ change this import if the function lives in a different module
 
 
@@ -18,7 +18,7 @@ class TestAddMissingnessIndicators:
             }
         )
 
-        result = add_missingness_indicators(X.copy())
+        result = add_numeric_missingness_indicators(X.copy())
 
         # No new *_missingness columns
         assert not any(col.endswith("_missingness") for col in result.columns)
@@ -34,7 +34,7 @@ class TestAddMissingnessIndicators:
             }
         )
 
-        result = add_missingness_indicators(X.copy())
+        result = add_numeric_missingness_indicators(X.copy())
 
         assert "age_missingness" in result.columns
 
@@ -55,7 +55,7 @@ class TestAddMissingnessIndicators:
             }
         )
 
-        result = add_missingness_indicators(X.copy())
+        result = add_numeric_missingness_indicators(X.copy())
 
         assert "age_missingness" in result.columns
         assert "score_missingness" in result.columns
@@ -83,7 +83,7 @@ class TestAddMissingnessIndicators:
             }
         )
 
-        result = add_missingness_indicators(X.copy())
+        result = add_numeric_missingness_indicators(X.copy())
 
         # Only original columns present; no *_missingness columns
         assert list(result.columns) == ["age", "category"]
@@ -93,7 +93,7 @@ class TestAddMissingnessIndicators:
         """Indicator columns must use pandas StringDtype, not plain object."""
         X = pd.DataFrame({"age": [10.0, np.nan]})
 
-        result = add_missingness_indicators(X.copy())
+        result = add_numeric_missingness_indicators(X.copy())
 
         col = result["age_missingness"]
         assert str(col.dtype) == "string"
