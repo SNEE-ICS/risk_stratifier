@@ -15,13 +15,17 @@ pip install "git+https://github.com/SNEE-ICS/risk_stratifier.git"
 
 Before you check out the documentation, it is recommended that you review **The guiding principles of this package** in the section below.
 
-[Can your data be used with this package?](docs/validate_data.ipynb) documentation for the ```validate_binary_y_and_X()``` function.
+[checking the data is permissable with this package:](docs/validate_data.ipynb)
+documentation for the ```validate_binary_y_and_X()``` function.
 
-[Handling missingness in numeric variables transparently](docs/handle_missingness.ipynb) documentation for the ```add_numeric_missingness_indicators()```
+[Handling missingness in numeric variables transparently:](docs/handle_missingness.ipynb)
+documentation for the ```add_numeric_missingness_indicators()```
 
-[Making use of pre-made modelling pipelines](docs/preprepared_models.ipynb) documentation for using premade models
+[Making use of pre-made modelling pipelines:](docs/preprepared_models.ipynb)
+documentation for using premade models
 
-[comparing differing models calibration](docs/assessing_the_best_model.ipynb) documentation for how to use `run_nested_cv_calibration_assessment`
+[comparing differing models calibration:](docs/assessing_the_best_model.ipynb)
+documentation for how to use `run_nested_cv_calibration_assessment`
 
 Documentation on the final fit coming soon...
 
@@ -73,6 +77,14 @@ Conformal prediction provides guaranteed uncertainty intervals. However, like re
 
 ## What is in development?
 
+### additional funcionality
+
 There is a desire to also write a cat_boost pipeline. Given the large volumes of categorical data in healthcare, it is a strong candidate for further development.
 
+A final fit function is required
+
+### Testing
+
 Integration with the premade modelling pipeline and binary nested cross-validation will require writing proper tests.
+
+Further development will also require tests
