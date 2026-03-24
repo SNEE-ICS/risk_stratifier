@@ -19,9 +19,11 @@ Before you check out the documentation, it is recommended that you review **The 
 
 [Handling missingness in numeric variables transparently](docs/handle_missingness.ipynb) documentation for the ```add_numeric_missingness_indicators()```
 
-[Making use of pre-made modelling pipelines](docs/preprepared_models.ipynb) documentation for the ```add_numeric_missingness_indicators()```
+[Making use of pre-made modelling pipelines](docs/preprepared_models.ipynb) documentation for using premade models
 
-Documentation on cross validation to be added soon...
+[comparing differing models calibration](docs/assessing_the_best_model.ipynb) documentation for how to use `run_nested_cv_calibration_assessment`
+
+Documentation on the final fit coming soon...
 
 ## The guiding principles of this package
 
@@ -71,15 +73,6 @@ Conformal prediction provides guaranteed uncertainty intervals. However, like re
 
 ## What is in development?
 
-Binary nested cross-validation function is complete and tested - documentation needs to be written.
-
-preprepared modelling pipelines are written but remain untested. These include:
-- lasso regression
-- ridge regression
-- xgboost
-
 There is a desire to also write a cat_boost pipeline. Given the large volumes of categorical data in healthcare, it is a strong candidate for further development.
 
-Integration with the premade modelling pipeline and binary nested cross-validation will require testing.
-
-A function to fit the final model on the full dataset which is then stored and logged must be written.
+Integration with the premade modelling pipeline and binary nested cross-validation will require writing proper tests.

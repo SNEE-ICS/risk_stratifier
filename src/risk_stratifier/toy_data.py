@@ -7,10 +7,10 @@ def make_toy_X_y(n_rows=1000, pos_rate=0.1, random_state=42):
     Returns:
         X: pandas.DataFrame with 1000 rows and:
            - int_col: nullable integer with NAs
-           - float_col: float with NAs
+           - float_col: float with NAs, positively correlated with target
            - str_col: string with NAs
 
-    y: pandas.Series of binary labels (0/1), ~10% positives (1)
+        y: pandas.Series of binary labels (0/1), ~10% positives (1)
     """
     rng = np.random.default_rng(random_state)
 
@@ -23,8 +23,9 @@ def make_toy_X_y(n_rows=1000, pos_rate=0.1, random_state=42):
     int_col[int_na_idx] = np.nan
     int_col = pd.Series(int_col, name="int_col").astype("Int64")
 
-    # Float column with NAs
+    # Float column with NAs — mean shifts by target (positives ~ N(2, 1))
     float_col = rng.normal(loc=0.0, scale=1.0, size=n_rows)
+    float_col += y.values * 2.0  # add signal: positives shifted up by 2
     float_na_idx = rng.choice(n_rows, size=int(n_rows * 0.1), replace=False)
     float_col[float_na_idx] = np.nan
     float_col = pd.Series(float_col, name="float_col")
