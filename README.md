@@ -16,16 +16,16 @@ pip install "git+https://github.com/SNEE-ICS/risk_stratifier.git"
 Before you check out the documentation, it is recommended that you review **The guiding principles of this package** in the section below.
 
 [checking the data is permissable with this package:](docs/validate_data.ipynb)
-documentation for the ```validate_binary_y_and_X()``` function.
+- documentation for the ```validate_binary_y_and_X()``` function.
 
 [Handling missingness in numeric variables transparently:](docs/handle_missingness.ipynb)
-documentation for the ```add_numeric_missingness_indicators()```
+- documentation for the ```add_numeric_missingness_indicators()```
 
 [Making use of pre-made modelling pipelines:](docs/preprepared_models.ipynb)
-documentation for using premade models
+- documentation for using premade models
 
 [comparing differing models calibration:](docs/assessing_the_best_model.ipynb)
-documentation for how to use `run_nested_cv_calibration_assessment`
+- documentation for how to use `run_nested_cv_calibration_assessment`
 
 Documentation on the final fit coming soon...
 
